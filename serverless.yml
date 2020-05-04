@@ -24,9 +24,9 @@ provider:
   name: aws
   runtime: nodejs12.x
 
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  # you can overwrite defaults here
+  stage: dev
+  region: ap-southeast-2
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -47,7 +47,8 @@ provider:
 # you can define service wide environment variables here
 #  environment:
 #    variable1: value1
-
+custom:
+  env: ${file(./${self:provider.stage}.env.json)}
 # you can add packaging information here
 #package:
 #  include:
@@ -58,8 +59,23 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  getTweetsTime:
+    handler: index.handler
+    events:
+      - http:
+          path: tweets
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: >
+                {
+                  "id" : "$input.params('id')"
+                }
+    environment:
+      TWITTER_CONSUMER_KEY: ${self:custom.env.TWITTER_CONSUMER_KEY}
+      TWITTER_CONSUMER_SECRET: ${self:custom.env.TWITTER_CONSUMER_SECRET}
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
