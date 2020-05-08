@@ -1,5 +1,5 @@
 'use strict';
-const { getTweetCreatedTime } = require('./apis');
+const { getTweetCreatedTime } = require('./twitterApis');
 
 module.exports.handler = async (event) => {
   const tweetId = event.id;
